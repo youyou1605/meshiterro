@@ -10,20 +10,36 @@
   <% end %>
 
 </div>
+
 <div>
-  <p>コメント件数:<%= @postimage.postcomments.count %></p>
+  <p>コメント件数：<%= @postimage.postcomments.count %></p>
   <% @postimage.postcomments.each do |postcomment| %>
-  <p><%= image_tag postcomment.user.get_profile_image(100,100) %></p>
-  <%= postcomment.user.name %>
-  <%= postcomment.created_at.strftime('%Y/%m/%d') %><%= postcomment.comment %>
- <% if postcomment.user == current_user %>
+    <p><%= image_tag postcomment.user.get_profile_image(100,100) %></p>
+    <%= postcomment.user.name %>
+    <%= postcomment.created_at.strftime('%Y/%m/%d') %><%= postcomment.comment %>
+    <% if postcomment.user == current_user %>
       <%= link_to "削除", postimage_postcomment_path(postcomment.postimage, postcomment), method: :delete %>
     <% end %>
+    <% if @postimage.favorited_by?(current_user) %>
+    <p>
+      <%= link_to postimage_favorites_path(@postimage), method: :delete do %>
+        ♥<%= @postimage.favorites.count %> いいね
+      <% end %>
+    </p>
+    <% else %>
+    <p>
+      <%= link_to postimage_favorites_path(@postimage), method: :post do %>
+        ♡<%= @postimage.favorites.count %> いいね
+      <% end %>
+    </p>
+    <% end %>
   <% end %>
+
 </div>
+
 <div>
-  <%= form_with model:[@postimage,@postcomment] do |f| %>
-  <%= f.text_area :comment, rows:'5', placeholder: "コメントをここに" %>
-  <%= f.submit "送信する" %>
+  <%= form_with model: [@postimage, @postcomment] do |f| %>
+    <%= f.text_area :comment, rows: '5', placeholder: "コメントをここに" %>
+    <%= f.submit "送信する" %>
   <% end %>
 </div>
