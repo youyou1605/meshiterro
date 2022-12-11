@@ -2,11 +2,28 @@
   <%= image_tag @postimage.get_image %>
   <p>ショップ名:<%= @postimage.shop_name %></p>
   <p>説明:<%= @postimage.caption %></p>
-  <p>投稿ユーザー画像:<%= image_tag 'sample-author1.jpg'%></p>
+  <p>投稿ユーザー画像:<%= image_tag @postimage.user.get_profile_image(100,100) %></p>
   <p>ユーザーネーム:<%= @postimage.user.name%></p>
   <p>投稿日:<%= @postimage.created_at.strftime('%Y/%m/%d') %></p>
   <% if @postimage.user == current_user %>
   <%= link_to "削除", postimage_path(@postimage), method: :delete %>
   <% end %>
 
+</div>
+<div>
+  <p>コメント件数:<%= @postimage.postcomments.count %></p>
+  <% @postimage.postcomments.each do |postcomment| %>
+  <p><%= image_tag postcomment.user.get_profile_image(100,100) %></p>
+  <%= postcomment.user.name %>
+  <%= postcomment.created_at.strftime('%Y/%m/%d') %><%= postcomment.comment %>
+ <% if postcomment.user == current_user %>
+      <%= link_to "削除", postimage_postcomment_path(postcomment.postimage, postcomment), method: :delete %>
+    <% end %>
+  <% end %>
+</div>
+<div>
+  <%= form_with model:[@postimage,@postcomment] do |f| %>
+  <%= f.text_area :comment, rows:'5', placeholder: "コメントをここに" %>
+  <%= f.submit "送信する" %>
+  <% end %>
 </div>
